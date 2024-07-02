@@ -1,7 +1,9 @@
 import {GameContext} from "../../game/Game.ts";
 import "./Bank.css";
 import React from "react";
-import {useUpdate} from "../../common/update.tsx";
+
+import {useUpdate} from "../../common/useUpdate.ts";
+import HumanReadableQuantity from "../common/HumanReadableQuantity.tsx";
 
 
 /**
@@ -13,10 +15,11 @@ export default function Bank() {
     useUpdate();
 
     return (
-        <div id={"bank"}>
-            <h2>{ Math.floor(paperclips.current)} Paperclips</h2>
+        <div id={"bank"} className={"w-full text-center bg-black bg-opacity-10"}>
+            <h2>
+                <HumanReadableQuantity quantity={paperclips.current} /> Paperclips</h2>
             <h3>
-                {paperclips.perSecond * paperclips?.multiplier}{ paperclips.bonus > 0 ? ` + ${paperclips?.bonus}` : ""} paperclips/s
+                <HumanReadableQuantity quantity={paperclips.perSecond * paperclips?.multiplier} canBePartial={true}/>{ paperclips.bonus > 0 ? ` + ${paperclips?.bonus}` : ""} paperclips/s
             </h3>
         </div>
     );

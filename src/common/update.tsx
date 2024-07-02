@@ -1,6 +1,6 @@
 import React, {ReactNode} from 'react';
 
-const UpdateContext = React.createContext(0);
+export const UpdateContext = React.createContext(0);
 
 /**
  * Update provider
@@ -25,14 +25,3 @@ export function UpdateProvider({children, interval = 0}: {children: ReactNode, i
     );
 }
 
-/**
- * Allows for using updates
- */
-export function useUpdate(): number {
-    const tick = React.useRef<number>();
-    const update = React.useContext(UpdateContext);
-    if (tick.current != update) {
-        tick.current = update;
-    }
-    return tick.current;
-}

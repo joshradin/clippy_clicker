@@ -1,35 +1,26 @@
 import './App.css';
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import Game, {GameContext} from "./game/Game";
 import {UpdateProvider} from "./common/update.tsx";
-import {GameView} from "./components/game/GameView.tsx";
+import {GameBoard} from "./components/game/GameBoard.tsx";
 
 declare global {
     interface Window {
-        Game?: Game
+        Game: Game
     }
 }
 
+const game = new Game();
+window.Game = game;
 function App() {
-
-    const [game, setGame] = useState<Game>();
-
-    useEffect(() => {
-        const game = new Game();
-        console.log("set game to", game);
-        setGame(game);
-    }, []);
-
-    useEffect(() => {
-        window.Game = game;
-    }, [game]);
+    const [game,] = useState<Game>(window.Game);
 
     if (!game) return null;
 
     return (
         <UpdateProvider>
             <GameContext.Provider value={game}>
-                <GameView />
+                <GameBoard />
             </GameContext.Provider>
         </UpdateProvider>
     );

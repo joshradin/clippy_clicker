@@ -1,11 +1,13 @@
 import React, {useContext} from 'react';
 import Building, {loadBuildings} from "./Building.ts";
+import Modifier from "./Modifier.ts";
+import {baseModifiers} from "./modifiers.ts";
 
 /**
  * Used for representing the state of a game
  */
 export default class Game {
-    paperclips: Paperclips;
+    readonly paperclips: Paperclips;
     clicks: number;
 
     /**
@@ -17,28 +19,17 @@ export default class Game {
      */
     readonly Buildings: Record<string, Readonly<Building>>;
     readonly buildingsOwned: Record<string, number>;
-    private lastUpdated: number;
+    readonly modifiers: Modifier[];
+    private _lastUpdated: number;
+    private _dataLastUpdated: number;
 
     constructor() {
-        const game = this;
         this.paperclips = {
             current: 0,
             bonus: 0,
             multiplier: 1,
-            get perSecond(): number {
-                let sum = 0;
-
-                for (const buildingId in game.Buildings) {
-                    if (game.getBuildingCount(buildingId) > 0) {
-                        sum += game.getBuildingPcS(buildingId);
-                    }
-                }
-
-                return sum * this.multiplier + this.bonus;
-            },
-            get perClick(): number {
-                return 1 + game.buildingsOwned["bender"];
-            },
+            perSecond: 0,
+            perClick: 1,
             thisAscension: 0,
             prevAscensions: [],
             get allTime(): number {
@@ -52,7 +43,9 @@ export default class Game {
             map[obj] = 0;
             return map;
         }, {} as Record<string, number>);
-        this.lastUpdated = Date.now();
+        this.modifiers = [...baseModifiers];
+        this._lastUpdated = Date.now();
+        this._dataLastUpdated = Date.now();
     }
 
     /**
@@ -60,16 +53,140 @@ export default class Game {
      */
     update() {
         const time = Date.now();
-        const elapsed = time - this.lastUpdated;
+        const elapsed = time - this._lastUpdated;
 
         const seconds = elapsed / 1000.0;
         const pcS = this.paperclips.perSecond;
-        console.log("PcS:", pcS);
         const clipsMade = pcS * seconds;
 
-        this.paperclips.current += clipsMade;
+        this.addPaperclips(clipsMade);
 
-        this.lastUpdated = time;
+        this._lastUpdated = time;
+    }
+
+    get lastUpdated(): number {
+        return this._lastUpdated;
+    }
+
+    get dataLastUpdated(): number {
+        return this._dataLastUpdated;
+    }
+
+    get totalBuildings(): number {
+        return Object.values(this.buildingsOwned).reduce((accum, next) => accum + next, 0);
+    }
+
+    private determinePaperclipsPerSecond(): number {
+        let sum = 0;
+
+        for (const buildingId in this.Buildings) {
+            if (this.getBuildingCount(buildingId) > 0) {
+                sum += this.getBuildingPcps(buildingId) * this.getBuildingCount(buildingId);
+            }
+        }
+
+        return sum * this.paperclips.multiplier + this.paperclips.bonus;
+    }
+
+    private determinePaperclipsPerClick(): number {
+        let sum = 1;
+        for (const modifier of this.modifiers.filter(m => m.classification === "per-click")) {
+            switch (modifier.type) {
+                case "per-click-addition": {
+                    sum += modifier.quantity;
+                    break;
+                }
+                case "per-click-addition-from-building": {
+                    sum += modifier.quantity * this.getBuildingCount(modifier.buildingId);
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+        return sum;
+    }
+
+    private determineBuildTime(): number {
+        let base = 1000;
+
+        for (const m of this.modifiers.filter(m => m.classification === "build-time")) {
+            switch (m.type) {
+                case "build-time-reduction":
+                    base *= m.reduction;
+                    break;
+                case "build-time-reduction-per-building": {
+                    let times;
+                    if (!m.buildingId) {
+                        times = Math.floor(this.totalBuildings / m.count);
+                    } else {
+                        times = Math.floor(this.getBuildingCount(m.buildingId) / m.count);
+                    }
+                    base *= m.reduction ** times;
+                    break;
+                }
+
+            }
+        }
+
+        // minimum time is 0
+        return base < 1 ? 0 : base;
+    }
+
+    /**
+     * Gets the building paperclips per second
+     * @param buildingId the building id
+     * @private
+     */
+    getBuildingPcps(buildingId: string): number {
+        let pcps = this.Buildings[buildingId].basePaperclipsPerSecond;
+        let multiplier = 1.0;
+
+        for (const modifier of this.modifiers
+            .filter(m => m.classification === "building-pcps")
+            .filter(m => m.multiplierKind === "additive")
+            ) {
+            switch (modifier.type) {
+                case "building-pcps-multiplier-from-building-quantity": {
+                    if (modifier.targetBuildingId === buildingId) {
+                        if (this.getBuildingCount(modifier.sourceBuildingId) > 0) {
+                            const buildingMult = modifier.multiplier ** this.getBuildingCount(modifier.sourceBuildingId);
+                            console.log(modifier.targetBuildingId, "multiplier from", modifier.sourceBuildingId, "=", buildingMult)
+                            multiplier += buildingMult - 1.0;
+                        }
+                    }
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+
+        for (const modifier of this.modifiers
+            .filter(m => m.classification === "building-pcps")
+            .filter(m => m.multiplierKind === "multiplicative")
+            ) {
+            switch (modifier.type) {
+                case "building-pcps-multiplier": {
+                    if (modifier.buildingId === buildingId) {
+                        multiplier *= modifier.multiplier;
+                    }
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+
+        return pcps * multiplier;
+    }
+
+    private updateData() {
+        this.paperclips.perSecond = this.determinePaperclipsPerSecond();
+        this.paperclips.perClick = this.determinePaperclipsPerClick();
+        this.buildTime = this.determineBuildTime();
+
+        this._dataLastUpdated = Date.now();
     }
 
     /**
@@ -112,7 +229,6 @@ export default class Game {
     }
 
     canPurchase(cost: number): boolean {
-        console.log("checking if", cost, "is less than", this.paperclips.current);
         return cost <= this.paperclips.current;
     }
 
@@ -123,7 +239,7 @@ export default class Game {
      * @private
      */
     private getNthBuildingCost(building: Building, n: number): number {
-        if (n == 1) {
+        if (n === 1) {
             return building.baseCost;
         } else {
             return this.getNthBuildingCost(building, n - 1) * 1.15;
@@ -143,32 +259,32 @@ export default class Game {
      * @param order
      */
     buy(order: BuyOrder): boolean {
-        switch (order.kind) {
-            case "building": {
-                const buildingId = order.id;
-                const quantity = order.quantity;
-                const cost = this.getBuildingCost(buildingId, quantity);
-                if (this.paperclips.current >= cost) {
-                    this.paperclips.current -= cost;
-                    this.buildingsOwned[buildingId] += quantity;
-                    return true;
-                } else {
-                    return false;
+        const ret = (() => {
+                switch (order.kind) {
+                    case "building": {
+                        const buildingId = order.id;
+                        const quantity = order.quantity;
+                        const cost = this.getBuildingCost(buildingId, quantity);
+                        if (this.paperclips.current >= cost) {
+                            this.paperclips.current -= cost;
+                            this.buildingsOwned[buildingId] += quantity;
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                    case "upgrade":
+                        return false;
                 }
             }
-            case "upgrade":
-                return false;
+        )();
+        if (ret) {
+            this.updateData();
         }
+        return ret;
     }
 
-    /**
-     * Gets the building paperclips per second
-     * @param buildingId the building id
-     * @private
-     */
-    private getBuildingPcS(buildingId: string): number {
-        return this.Buildings[buildingId].basePaperclipsPerSecond * this.buildingsOwned[buildingId];
-    }
+
 }
 
 /**

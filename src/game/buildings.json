@@ -12,7 +12,15 @@
     "description": "Recycles old paperclips to make them into new paperclips",
     "basePaperclipsPerSecond": 1,
     "baseCost": 50,
-    "bigIcon": "?",
+    "bigIcon": "./buildings/blender/blenderIcon.png",
     "smallIcon": "?"
+  },
+  {
+    "id": "assembly line",
+    "description": "Creates paperclips at a rate never before seen",
+    "basePaperclipsPerSecond": 20,
+    "baseCost": 250,
+    "bigIcon": "",
+    "smallIcon": ""
   }
 ]
