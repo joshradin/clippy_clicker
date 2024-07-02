@@ -1,0 +1,22 @@
+@keyframes paperclip-pulsate {
+    0% {
+        transform: scale(1) rotate(-15deg);
+    }
+    25% {
+        transform: scale(1.5) rotate(0deg);
+    }
+    50% {
+        transform: scale(1) rotate(15deg);
+    }
+    75% {
+        transform: scale(1.5) rotate(0deg);
+    }
+    100% {
+        transform: scale(1) rotate(-15deg);
+    }
+}
+
+.paperclip {
+    animation: paperclip-pulsate infinite 2s linear;
+}
+

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "bender",
+    "description": "Bends a paperclip",
+    "basePaperclipsPerSecond": 0.1,
+    "baseCost": 5,
+    "bigIcon": "?",
+    "smallIcon": "?"
+  },
+  {
+    "id": "blender",
+    "description": "Recycles old paperclips to make them into new paperclips",
+    "basePaperclipsPerSecond": 1,
+    "baseCost": 50,
+    "bigIcon": "?",
+    "smallIcon": "?"
+  }
+]

@@ -16,14 +16,22 @@ module.exports = {
             version: "detect"
         }
     },
-    ignorePatterns: ['dist', '.eslintrc.cjs'],
+    ignorePatterns: ['dist', '.eslintrc.cjs', 'tailwind.config.js'],
     parser: '@typescript-eslint/parser',
-    plugins: ['react-refresh'],
+    plugins: [
+        'react-refresh',
+        '@stylistic/ts',
+    ],
     rules: {
         'react-refresh/only-export-components': [
             'warn',
             {allowConstantExport: true},
         ],
+        '@stylistic/ts/semi': [
+            'error',
+            'always'
+        ],
+        "no-extra-semi": ['off']
     },
     parserOptions: {
         ecmaVersion: 'latest',
