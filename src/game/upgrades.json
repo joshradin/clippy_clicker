@@ -1,0 +1,88 @@
+[
+  {
+    "id": 1,
+    "name": "Faster Bending",
+    "description": "Bend paperclips even faster",
+    "icon": "/buildings/bender/benderIcon.png",
+    "cost": 100,
+    "criteria": {
+      "type": "specific-buildings-owned",
+      "buildingId": "bender",
+      "quantity": 1
+    },
+    "modifiers": [
+      {
+        "classification": "building-pcps",
+        "type": "building-pcps-multiplier",
+        "multiplier": 2,
+        "multiplierKind": "multiplicative",
+        "buildingId": "bender"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Even Faster Bending",
+    "description": "Bend paperclips even faster than before!!",
+    "icon": "/buildings/bender/benderIcon.png",
+    "effect": "gold",
+    "cost": 500,
+    "criteria": {
+      "type": "specific-buildings-owned",
+      "buildingId": "bender",
+      "quantity": 1
+    },
+    "modifiers": [
+      {
+        "classification": "building-pcps",
+        "type": "building-pcps-multiplier",
+        "multiplier": 2,
+        "multiplierKind": "multiplicative",
+        "buildingId": "bender"
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "name": "Sharper blades",
+    "description": "The blades on the blenders are sharper now, allowing for safer recycling",
+    "icon": "/buildings/blender/blenderIcon.png",
+    "cost": 1000,
+    "criteria": {
+      "type": "specific-buildings-owned",
+      "buildingId": "blender",
+      "quantity": 1
+    },
+    "modifiers": [
+      {
+        "classification": "building-pcps",
+        "type": "building-pcps-multiplier",
+        "multiplier": 2,
+        "multiplierKind": "multiplicative",
+        "buildingId": "blender"
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "name": "More blades",
+    "description": "Bend paperclips even faster than before!!",
+    "icon": "/buildings/blender/blenderIcon.png",
+    "effect": "gold",
+    "cost": 5000,
+    "criteria": {
+      "type": "specific-buildings-owned",
+      "buildingId": "blender",
+      "quantity": 1
+    },
+    "modifiers": [
+      {
+        "classification": "building-pcps",
+        "type": "building-pcps-multiplier",
+        "multiplier": 2,
+        "multiplierKind": "multiplicative",
+        "buildingId": "blender"
+      }
+    ]
+  }
+]

@@ -1,9 +1,9 @@
 import {useEffect} from "react";
-import {useGameContext} from "../../game/Game.ts";
-import {useUpdate} from "../../common/useUpdate.ts";
-import PaperclipMaker from "./PaperclipMaker.tsx";
-import Store from "./Store.tsx";
-import HumanReadableQuantity from "../common/HumanReadableQuantity.tsx";
+import {useGameContext} from "../../game/Game";
+import {useUpdate} from "../../common/useUpdate";
+import PaperclipMaker from "./PaperclipMaker";
+import Store from "./Store";
+import Stats from "./Stats.tsx";
 
 export function GameBoard() {
     const update = useUpdate();
@@ -22,10 +22,7 @@ export function GameBoard() {
                     <PaperclipMaker />
                 </div>
                 <div className={"grow w-12"}>
-                    <p>
-                        <span className={"font-bold"}>Total Paperclips: </span>
-                        <span><HumanReadableQuantity quantity={Math.floor(game.paperclips.thisAscension)} /></span>
-                    </p>
+                    <Stats />
                 </div>
                 <div className={"border-l"}>
                     <Store />

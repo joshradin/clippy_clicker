@@ -12,5 +12,5 @@ export default function HumanReadableQuantity({ quantity, canBePartial=false} : 
 
     return (
         <span>{mapped}</span>
-    )
+    );
 }

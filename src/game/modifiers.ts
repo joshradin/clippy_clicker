@@ -18,9 +18,9 @@ export function buildingPcpsMultiplierFromBuildingQuantity(sourceBuilding: strin
         multiplier,
         multiplierKind: "additive",
         sourceBuildingId: sourceBuilding,
-        targetBuildingId: targetBuilding,
+        buildingId: targetBuilding,
         type: "building-pcps-multiplier-from-building-quantity"
-    }
+    };
 }
 
 export function buildTimeReduction(reduction: number): BuildTimeReduction {
@@ -41,8 +41,6 @@ export function buildTimeReductionPerBuilding(reduction: number, count: number =
 
 
 export const baseModifiers: readonly Modifier[] = [
-    perClickFromBuilding("bender"),
-    buildingPcpsMultiplierFromBuildingQuantity("blender", "bender", 0.85),
-    buildingPcpsMultiplierFromBuildingQuantity("bender", "blender", 1.01),
+    perClickFromBuilding("bender", 0.1),
     buildTimeReductionPerBuilding(0.75, 10)
 ];

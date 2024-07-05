@@ -1,7 +1,9 @@
 import React, {useContext} from 'react';
 import Building, {loadBuildings} from "./Building.ts";
-import Modifier from "./Modifier.ts";
+import ModifierContainer from "./ModifierContainer.ts";
 import {baseModifiers} from "./modifiers.ts";
+import {CriteriaEvaluator} from "./CriteriaEvaluator.ts";
+import Upgrade, {loadUpgrades} from "./Upgrade.ts";
 
 /**
  * Used for representing the state of a game
@@ -18,10 +20,18 @@ export default class Game {
      * Provides access to all building types
      */
     readonly Buildings: Record<string, Readonly<Building>>;
+    readonly Upgrades: Record<number, Upgrade>;
+
+
     readonly buildingsOwned: Record<string, number>;
-    readonly modifiers: Modifier[];
+    readonly activeUpgrades: Set<number>;
+    readonly modifiers: ModifierContainer;
+    readonly criteriaEvaluator: CriteriaEvaluator;
+
+
     private _lastUpdated: number;
     private _dataLastUpdated: number;
+
 
     constructor() {
         this.paperclips = {
@@ -39,11 +49,17 @@ export default class Game {
         this.clicks = 0;
         this.buildTime = 1000;
         this.Buildings = loadBuildings();
+        this.Upgrades = loadUpgrades();
+
+
         this.buildingsOwned = Object.keys(this.Buildings).reduce(function (map, obj) {
             map[obj] = 0;
             return map;
         }, {} as Record<string, number>);
-        this.modifiers = [...baseModifiers];
+        this.activeUpgrades = new Set();
+        this.modifiers = new ModifierContainer(...baseModifiers);
+        this.criteriaEvaluator = new CriteriaEvaluator(this);
+
         this._lastUpdated = Date.now();
         this._dataLastUpdated = Date.now();
     }
@@ -54,6 +70,9 @@ export default class Game {
     update() {
         const time = Date.now();
         const elapsed = time - this._lastUpdated;
+        if (elapsed < 1000) {
+            return;
+        }
 
         const seconds = elapsed / 1000.0;
         const pcS = this.paperclips.perSecond;
@@ -90,7 +109,7 @@ export default class Game {
 
     private determinePaperclipsPerClick(): number {
         let sum = 1;
-        for (const modifier of this.modifiers.filter(m => m.classification === "per-click")) {
+        for (const modifier of this.modifiers.perClickModifiers) {
             switch (modifier.type) {
                 case "per-click-addition": {
                     sum += modifier.quantity;
@@ -110,7 +129,7 @@ export default class Game {
     private determineBuildTime(): number {
         let base = 1000;
 
-        for (const m of this.modifiers.filter(m => m.classification === "build-time")) {
+        for (const m of this.modifiers.buildTimeModifiers) {
             switch (m.type) {
                 case "build-time-reduction":
                     base *= m.reduction;
@@ -139,19 +158,17 @@ export default class Game {
      * @private
      */
     getBuildingPcps(buildingId: string): number {
-        let pcps = this.Buildings[buildingId].basePaperclipsPerSecond;
+        const pcps = this.Buildings[buildingId].basePaperclipsPerSecond;
         let multiplier = 1.0;
 
-        for (const modifier of this.modifiers
-            .filter(m => m.classification === "building-pcps")
-            .filter(m => m.multiplierKind === "additive")
-            ) {
+        const modifiers = [...this.modifiers
+            .pcpsPerBuildingModifiers];
+        for (const modifier of modifiers.filter(m => m.multiplierKind === "additive")) {
             switch (modifier.type) {
                 case "building-pcps-multiplier-from-building-quantity": {
-                    if (modifier.targetBuildingId === buildingId) {
+                    if (modifier.buildingId === buildingId) {
                         if (this.getBuildingCount(modifier.sourceBuildingId) > 0) {
                             const buildingMult = modifier.multiplier ** this.getBuildingCount(modifier.sourceBuildingId);
-                            console.log(modifier.targetBuildingId, "multiplier from", modifier.sourceBuildingId, "=", buildingMult)
                             multiplier += buildingMult - 1.0;
                         }
                     }
@@ -162,8 +179,7 @@ export default class Game {
             }
         }
 
-        for (const modifier of this.modifiers
-            .filter(m => m.classification === "building-pcps")
+        for (const modifier of modifiers
             .filter(m => m.multiplierKind === "multiplicative")
             ) {
             switch (modifier.type) {
@@ -274,7 +290,21 @@ export default class Game {
                         }
                     }
                     case "upgrade":
-                        return false;
+                        const upgradeId = order.id;
+                        const cost = this.Upgrades[upgradeId].cost;
+                        if (this.paperclips.current >= cost && !this.activeUpgrades.has(upgradeId)) {
+                            this.paperclips.current -= cost;
+                            this.activeUpgrades.add(upgradeId);
+
+                            const upgrade = this.Upgrades[upgradeId];
+                            for (const modifier of upgrade.modifiers) {
+                                this.modifiers.addModifier(modifier);
+                            }
+
+                            return true;
+                        } else {
+                            return false;
+                        }
                 }
             }
         )();
@@ -322,8 +352,16 @@ export const useGameContext = () => {
     return useContext(GameContext)!;
 };
 
-export interface BuyOrder {
-    kind: 'building' | 'upgrade',
+
+export interface BuyBuildingOrder {
+    kind: 'building',
     id: string,
     quantity: number,
 }
+
+export interface BuyUpgradeOrder {
+    kind: 'upgrade',
+    id: number
+}
+
+export type BuyOrder = BuyBuildingOrder | BuyUpgradeOrder;

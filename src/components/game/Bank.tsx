@@ -16,10 +16,11 @@ export default function Bank() {
 
     return (
         <div id={"bank"} className={"w-full text-center bg-black bg-opacity-10"}>
-            <h2>
-                <HumanReadableQuantity quantity={paperclips.current} /> Paperclips</h2>
+            <h1><HumanReadableQuantity quantity={paperclips.current}/></h1>
+            <h2 className={"text-xl"}>Paperclips</h2>
             <h3>
-                <HumanReadableQuantity quantity={paperclips.perSecond * paperclips?.multiplier} canBePartial={true}/>{ paperclips.bonus > 0 ? ` + ${paperclips?.bonus}` : ""} paperclips/s
+                <HumanReadableQuantity quantity={paperclips.perSecond * paperclips?.multiplier}
+                                       canBePartial={true}/>{paperclips.bonus > 0 ? ` + ${paperclips?.bonus}` : ""} paperclips/s
             </h3>
         </div>
     );

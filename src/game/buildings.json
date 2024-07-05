@@ -4,22 +4,30 @@
     "description": "Bends a paperclip",
     "basePaperclipsPerSecond": 0.1,
     "baseCost": 5,
-    "bigIcon": "?",
+    "bigIcon": "/buildings/bender/benderIcon.png",
     "smallIcon": "?"
   },
   {
     "id": "blender",
     "description": "Recycles old paperclips to make them into new paperclips",
     "basePaperclipsPerSecond": 1,
-    "baseCost": 50,
-    "bigIcon": "./buildings/blender/blenderIcon.png",
+    "baseCost": 55,
+    "bigIcon": "/buildings/blender/blenderIcon.png",
     "smallIcon": "?"
   },
   {
-    "id": "assembly line",
-    "description": "Creates paperclips at a rate never before seen",
-    "basePaperclipsPerSecond": 20,
-    "baseCost": 250,
+    "id": "fiverr-miner",
+    "description": "You payed a guy on fiverr to mine for you",
+    "basePaperclipsPerSecond": 10,
+    "baseCost": 605,
+    "bigIcon": "",
+    "smallIcon": ""
+  },
+  {
+    "id": "factory",
+    "description": "Producing paperclips like nobody's business. Well, besides your own.",
+    "basePaperclipsPerSecond": 70,
+    "baseCost": 13310,
     "bigIcon": "",
     "smallIcon": ""
   }

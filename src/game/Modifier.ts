@@ -1,9 +1,22 @@
-export interface BaseModifier {
-    classification: string;
+export type ModifierClassification =
+    | "building-pcps"
+    | "per-click"
+    | "build-time"
+    ;
+
+interface BaseModifier {
+    classification: ModifierClassification;
     type: string
 }
 
-interface BuildingPcpsModifier extends BaseModifier {
+export interface BuildingModifier extends BaseModifier {
+    /**
+     * The target building
+     */
+    buildingId: string
+}
+
+interface BuildingPcpsModifier extends BuildingModifier {
     classification: "building-pcps";
     multiplierKind: "additive" | "multiplicative";
 }
@@ -18,7 +31,6 @@ export interface BuildingPcpsMultiplier extends BuildingPcpsModifier {
 export interface BuildingPcpsMultiplierFromBuildingQuantity extends BuildingPcpsModifier {
     type: "building-pcps-multiplier-from-building-quantity",
     sourceBuildingId: string,
-    targetBuildingId: string,
     multiplier: number,
     multiplierKind: "additive"
 }
@@ -29,7 +41,7 @@ export interface PerClickAddition extends BaseModifier{
     quantity: number
 }
 
-export interface PerClickAdditionFromBuildingQuantity extends BaseModifier{
+export interface PerClickAdditionFromBuildingQuantity extends BaseModifier {
     classification: "per-click";
     type: "per-click-addition-from-building"
     buildingId: string,

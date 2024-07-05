@@ -7,16 +7,22 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest"
   },
   "dependencies": {
+    "classnames": "^2.5.1",
     "human-number": "^2.0.4",
+    "humanize-duration": "^3.32.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-tooltip": "^5.27.0",
+    "title-case": "^4.3.1"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^2.3.0",
     "@types/human-number": "^1.0.2",
+    "@types/humanize-duration": "^3.27.4",
     "@types/lodash": "^4.17.5",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
@@ -33,7 +39,8 @@
     "postcss-plugin": "^1.0.0",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.2.2",
-    "vite": "^5.3.1"
+    "vite": "^5.3.1",
+    "vitest": "^1.6.0"
   },
   "peerDependencies": {
     "yaml": "^2.4.5"

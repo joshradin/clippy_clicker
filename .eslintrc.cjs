@@ -31,7 +31,8 @@ module.exports = {
             'error',
             'always'
         ],
-        "no-extra-semi": ['off']
+        "no-extra-semi": ['off'],
+        "react-hooks/exhaustive-deps": "off"
     },
     parserOptions: {
         ecmaVersion: 'latest',
