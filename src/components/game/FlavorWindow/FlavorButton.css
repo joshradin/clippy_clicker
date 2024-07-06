@@ -1,0 +1,3 @@
+.flavor-button {
+    @apply ring-offset-0 ring-0 hover:drop-shadow text-gray-400 hover:text-white hover:brightness-110 hover:ring-1 hover:ring-black
+}

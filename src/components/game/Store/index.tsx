@@ -4,6 +4,7 @@ import BuildingButton from "./BuildingButton.tsx";
 import classnames from "classnames";
 import {titleCase} from "title-case";
 import PurchaseUpgrade from "./PurchaseUpgrade.tsx";
+import {sortUpgrades} from "../../../game/upgrades.ts";
 
 interface Buy {
     mode: "buy";
@@ -115,9 +116,9 @@ export default function Store() {
     return (
         <>
             <div className={"bg-slate-700 h-full"}>
-                <div className={"container flex flex-row"}>
+                <div className={"container flex flex-row flex-wrap gap-1"}>
                     {
-                        Object.values(game.Upgrades)
+                        sortUpgrades(Object.values(game.Upgrades))
                             .filter(upgrade => !game.activeUpgrades.has(upgrade.id))
                             .filter(upgrade => game.criteriaEvaluator.eval(upgrade.criteria))
                             .map(upgrade => {

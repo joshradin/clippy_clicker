@@ -5,7 +5,7 @@
     "basePaperclipsPerSecond": 0.1,
     "baseCost": 5,
     "bigIcon": "/buildings/bender/benderIcon.png",
-    "smallIcon": "?"
+    "smallIcon": "/buildings/bender/benderSmall.png"
   },
   {
     "id": "blender",
@@ -28,7 +28,7 @@
     "description": "Producing paperclips like nobody's business. Well, besides your own.",
     "basePaperclipsPerSecond": 70,
     "baseCost": 13310,
-    "bigIcon": "",
+    "bigIcon": "?",
     "smallIcon": ""
   }
 ]

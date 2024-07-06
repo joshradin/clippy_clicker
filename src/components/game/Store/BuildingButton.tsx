@@ -1,12 +1,11 @@
 import React from "react";
-import Game, {useGameContext} from "../../../game/Game.ts";
-import Building, {buildingTitle} from "../../../game/Building.ts";
+import {useGameContext} from "../../../game/Game.ts";
+import {buildingTitle} from "../../../game/Building.ts";
 import PaperclipQuantity from "../../common/PaperclipQuantity.tsx";
 
 import {useUpdate} from "../../../common/useUpdate.ts";
 import Tooltip from "../../common/Tooltip.tsx";
-import {titleCase} from "title-case";
-import durationHumanizer from "../../../common/durationHumanizer";
+import {BuildingInfo} from "./BuildingInfo.tsx";
 
 interface IBuildingEditorProps {
     buildingId: string,
@@ -83,7 +82,7 @@ export default function BuildingButton(
     return (
         <>
             <Tooltip anchorSelect={`.building-modal#${buildingId}-modal`}>
-                <BuildingInfo building={building} game={game}/>
+                <BuildingInfo building={building} game={game} purchaseCount={quantity === "all" ? 100 : quantity}/>
             </Tooltip>
             <div
                 id={`${buildingId}-modal`}
@@ -118,52 +117,3 @@ export default function BuildingButton(
     );
 }
 
-export function BuildingInfo({building, game}: {
-    building: Readonly<Building>,
-    game: Game
-}) {
-    const showInfo = React.useMemo(() => game.getBuildingCount(building.id) > 0, [building.id, game, game.lastUpdated]);
-    const pcps = React.useMemo(() => game.getBuildingPcps(building.id) * game.getBuildingCount(building.id), [building.id, game, game.getBuildingCount(building.id), game.dataLastUpdated]);
-
-    const purchaseTime = React.useMemo(() => {
-            if (game.paperclips.perSecond === 0) return "∞";
-            const rawSeconds = game.getBuildingCost(building.id) / game.paperclips.perSecond;
-            return durationHumanizer(rawSeconds * 1000 /* ms conversion */);
-        },
-        [game.getBuildingCost(building.id), game.paperclips.perSecond, game.dataLastUpdated]
-    );
-
-
-    return (
-        <div className={"divide-y divide-slate-600"}>
-            <div className={"text-white text-sm text-start pb-2"}>
-                <h2 className={"font-bold"}>{buildingTitle(building)}</h2>
-                <ul
-                    className={"pl-4"}
-                    style={{
-                        listStyle: 'inside "📎 "',
-                    }}>
-                    {showInfo &&
-                        <>
-                            <li>
-                                Per Second: {pcps.toPrecision(3)} ({(pcps / game.paperclips.perSecond * 100).toFixed(1)}%
-                                of
-                                total)
-                            </li>
-
-                        </>
-                    }
-                    <li>
-                        Each {titleCase(building.id)} provides <PaperclipQuantity
-                        quantity={game.getBuildingPcps(building.id)}/> /sec
-                    </li>
-                    <li>
-                        Approx. Purchase Time: {purchaseTime}
-                    </li>
-                </ul>
-            </div>
-            <p className={"italic font-light text-gray-400"}>{building.description}</p>
-        </div>
-    )
-        ;
-}

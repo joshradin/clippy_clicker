@@ -5,6 +5,21 @@ import {baseModifiers} from "./modifiers.ts";
 import {CriteriaEvaluator} from "./CriteriaEvaluator.ts";
 import Upgrade, {loadUpgrades} from "./Upgrade.ts";
 
+function getPaperclips(): Paperclips {
+    return {
+        current: 0,
+        bonus: 0,
+        multiplier: 1,
+        perSecond: 0,
+        perClick: 1,
+        thisAscension: 0,
+        prevAscensions: [],
+        get allTime(): number {
+            return this.thisAscension + this.prevAscensions.reduce((acc, current) => acc + current, 0);
+        }
+    };
+}
+
 /**
  * Used for representing the state of a game
  */
@@ -34,22 +49,11 @@ export default class Game {
 
 
     constructor() {
-        this.paperclips = {
-            current: 0,
-            bonus: 0,
-            multiplier: 1,
-            perSecond: 0,
-            perClick: 1,
-            thisAscension: 0,
-            prevAscensions: [],
-            get allTime(): number {
-                return this.thisAscension + this.prevAscensions.reduce((acc, current) => acc + current, 0);
-            }
-        };
+        this.paperclips = getPaperclips();
         this.clicks = 0;
         this.buildTime = 1000;
         this.Buildings = loadBuildings();
-        this.Upgrades = loadUpgrades();
+        this.Upgrades = loadUpgrades(this);
 
 
         this.buildingsOwned = Object.keys(this.Buildings).reduce(function (map, obj) {
@@ -197,7 +201,7 @@ export default class Game {
         return pcps * multiplier;
     }
 
-    private updateData() {
+    updateData() {
         this.paperclips.perSecond = this.determinePaperclipsPerSecond();
         this.paperclips.perClick = this.determinePaperclipsPerClick();
         this.buildTime = this.determineBuildTime();
@@ -289,7 +293,7 @@ export default class Game {
                             return false;
                         }
                     }
-                    case "upgrade":
+                    case "upgrade": {
                         const upgradeId = order.id;
                         const cost = this.Upgrades[upgradeId].cost;
                         if (this.paperclips.current >= cost && !this.activeUpgrades.has(upgradeId)) {
@@ -305,6 +309,7 @@ export default class Game {
                         } else {
                             return false;
                         }
+                    }
                 }
             }
         )();

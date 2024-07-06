@@ -1,7 +1,8 @@
 import Modifier from "./Modifier.ts";
 import UnlockCriteria from "./UnlockCriteria.ts";
-import rawUpgrades from "./upgrades.json";
+import findUpgrades, {verifyUpgrades} from "./upgrades.ts";
 import {UpgradeIconEffect} from "../components/common/UpgradeIcon.tsx";
+import Game from "./Game.ts";
 
 /**
  * An upgrade
@@ -20,8 +21,9 @@ export default interface Upgrade {
 /**
  * Loads all upgrades, providing an association from id to the upgrade itself
  */
-export function loadUpgrades(): Record<number, Upgrade> {
-    const upgrades: Upgrade[] = rawUpgrades as Upgrade[];
+export function loadUpgrades(game: Game): Record<number, Upgrade> {
+    const upgrades: Upgrade[] = findUpgrades(game);
+    verifyUpgrades(upgrades);
     return upgrades.reduce((accum, upgrade) => {
         accum[upgrade.id] = upgrade;
         return accum;

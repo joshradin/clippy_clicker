@@ -13,10 +13,10 @@ export interface UpgradeIconProps {
 }
 
 export default function UpgradeIcon(props: UpgradeIconProps) {
-    let {effect, icon, size} = props;
+    const {effect, icon, size} = props;
     const classNames = React.useMemo(() => {
         return classnames("border-2",
-            "border-" + colors.highlight,
+            "border-indigo-500",
             "rounded",
             "bg-black",
             "flex",
@@ -28,7 +28,7 @@ export default function UpgradeIcon(props: UpgradeIconProps) {
                 "h-16": size === "medium",
                 "w-24": size === "large",
                 "h-24": size === "large",
-            })
+            });
     }, [size]);
 
     const filter: string = React.useMemo(() => {
@@ -36,7 +36,7 @@ export default function UpgradeIcon(props: UpgradeIconProps) {
             case "gold":
                 return "invert(76%) sepia(98%) saturate(1753%) hue-rotate(359deg) brightness(102%) contrast(104%)";
             default:
-                return "none"
+                return "none";
         }
     }, [effect]);
 

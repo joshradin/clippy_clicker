@@ -14,7 +14,7 @@ test('total-paperclips', () => {
         type: "total-paperclips",
         quantity: 1
     })).toBeTruthy();
-})
+});
 
 test('total-paperclips and specific-buildings-owned', () => {
     const game = new Game();
@@ -37,4 +37,4 @@ test('total-paperclips and specific-buildings-owned', () => {
     expect(game.criteriaEvaluator.eval(criteria)).toBeFalsy();
     game.buildingsOwned["bender"] += 1;
     expect(game.criteriaEvaluator.eval(criteria)).toBeTruthy();
-})
+});

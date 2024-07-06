@@ -7,7 +7,6 @@ export default interface Building {
     readonly description: string;
     readonly basePaperclipsPerSecond: number;
     readonly baseCost: number;
-
     readonly bigIcon: string;
     readonly smallIcon: string;
 }

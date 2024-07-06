@@ -1,5 +1,5 @@
 {
-  "name": "my_idle_game",
+  "name": "clippy-clicker",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,24 +8,30 @@
     "build": "tsc -b && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "lint-fix": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix"
   },
   "dependencies": {
+    "base-64": "^1.0.0",
     "classnames": "^2.5.1",
     "human-number": "^2.0.4",
     "humanize-duration": "^3.32.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-tooltip": "^5.27.0",
-    "title-case": "^4.3.1"
+    "title-case": "^4.3.1",
+    "utf8": "^3.0.0"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^2.3.0",
+    "@types/base-64": "^1.0.2",
     "@types/human-number": "^1.0.2",
     "@types/humanize-duration": "^3.27.4",
     "@types/lodash": "^4.17.5",
+    "@types/node": "^20.14.10",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@types/utf8": "^3.0.3",
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
     "@vitejs/plugin-react": "^4.3.1",
