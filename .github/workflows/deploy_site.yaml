@@ -41,7 +41,7 @@ jobs:
         run: npm run build
       - name: Copy public to dist
         run: |
-          cp -r ./public ./dist
+          cp -r ./public/* ./dist
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
