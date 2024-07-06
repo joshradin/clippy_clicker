@@ -25,7 +25,7 @@ export default function BuildingDisplay() {
                         const building = game.Buildings[buildingBody.buildingId];
                         return (
                             <img key={idx}
-                                 src={building.bigIcon}
+                                 src={building.storeIcon}
                                  alt={building.id}
                                  className={"absolute max-h-[64px] max-w-[64px]"}
                                  style={{

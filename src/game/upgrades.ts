@@ -30,7 +30,7 @@ function scalingBuildingUpgrades(
 ): Upgrade[] {
     const built: Upgrade[] = [];
     const ids = idGenerator(baseId);
-    const { buildingId, baseIcon } = { buildingId: building.id, baseIcon: building.smallIcon };
+    const { buildingId, baseIcon } = { buildingId: building.id, baseIcon: building.upgradeIcon };
 
     for (const upgrade of upgrades) {
         const id = ids.next().value;

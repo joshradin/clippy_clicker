@@ -27,7 +27,9 @@ export default function BigPaperclip() {
     const className = React.useMemo(() => clicked ? "paperclip clicked" : "paperclip", [clicked]);
 
     return (
-        <div style={{
+        <div
+            className={"rounded-full ring-2 ring-indigo-500 hover:bg-slate-700"}
+            style={{
             margin: '5dv',
             width: '150px',
             height: '150px',

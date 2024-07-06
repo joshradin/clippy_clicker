@@ -106,7 +106,7 @@ export default function BuildingButton(
                         </div>
                         <img draggable={false}
                              className={"absolute bottom-0 left-0 float-right rotate-12 pl-2 pb-2 h-2/3 " + (canDoAction ? "grayscale-0" : "grayscale")}
-                             src={new URL(building.bigIcon, import.meta.url).href}
+                             src={new URL(building.storeIcon, import.meta.url).href}
                              alt={`${buildingTitle(building)} icon`}/>
                     </div>
                 </div>

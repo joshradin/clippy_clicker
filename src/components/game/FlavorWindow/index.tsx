@@ -32,7 +32,7 @@ export default function FlavorWindow() {
         <div className={"h-full bg-black flex flex-col"}>
             <div className={"flex flex-row h-28"}>
                 <div className={"bg-gray-800 w-40 flex flex-col"}>
-                    <button className={"w-full grow flavor-button bg-transparent"}
+                    <button className={"w-full grow flavor-button bg-transparent drop-shadow-lg"}
                             onClick={setFlavorFactory("options")}>
                         Options
                     </button>
