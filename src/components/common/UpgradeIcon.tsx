@@ -1,6 +1,5 @@
 import React from "react";
 import classnames from "classnames";
-import {colors} from "../../common/tailwind.ts";
 
 export type UpgradeIconEffect =
     | "gold";

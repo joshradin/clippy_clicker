@@ -1,6 +1,5 @@
 import {Tooltip as ReactTooltip} from "react-tooltip";
 import React, {ReactNode} from "react";
-import { colors} from "../../common/tailwind.ts";
 
 export interface TooltipProps {
     anchorSelect: string;
@@ -22,7 +21,7 @@ export default function Tooltip({anchorSelect, children}: TooltipProps): ReactNo
         >
             <div ref={ref} data-tooltip-id={ref.current?.id}>
                 <div
-                    className={`place-items-start bg-gray-900 p-1 border-2 border-${colors.highlight} rounded max-w-80`}>
+                    className={`place-items-start bg-gray-900 p-1 border-2 border-indigo-500 rounded max-w-80`}>
                     {children}
                 </div>
             </div>
