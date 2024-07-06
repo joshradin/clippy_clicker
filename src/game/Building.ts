@@ -1,6 +1,5 @@
-import buildings from "./buildings.json";
+import buildings from "./buildings.ts";
 import {titleCase} from "title-case";
-const typedBuildings: Building[] = buildings;
 
 export default interface Building {
     readonly id: string;
@@ -15,7 +14,7 @@ export default interface Building {
  * Loads all base buildings
  */
 export function loadBuildings(): Record<string, Building> {
-    return typedBuildings
+    return buildings
         .reduce((p, b) => {
             p[b.id] = b;
             return p;
