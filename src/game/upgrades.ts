@@ -19,8 +19,7 @@ const effectScale: (UpgradeIconEffect | undefined)[] = [
 /**
  * Creates a scaling building upgrade
  * @param baseId
- * @param buildingId
- * @param baseIcon
+ * @param building
  * @param upgrades
  */
 function scalingBuildingUpgrades(
@@ -55,7 +54,8 @@ function scalingBuildingUpgrades(
                     multiplierKind: "multiplicative",
                     buildingId
                 }
-            ]
+            ],
+            associatedBuilding: buildingId
         });
     }
 
@@ -107,6 +107,24 @@ export default function getUpgrades(game: Game): Upgrade[] {
                 {name: "More miners", description: "We could probably spare a few more miners for 5 more dollars", cost: 10000, buildingsReq: 1},
                 {name: "Doordashers", description: "We can pay door dashers to also mine more iron for our paperclips", cost: 50000, buildingsReq: 1}
             ]
-        )
+        ),
+        {
+            id: 5000,
+            name: "Bonus Clicking",
+            description: "Provides extra paperclips from your paperclips per second",
+            icon: "",
+            cost: 250,
+            criteria: {
+                type: "total-clicks",
+                clicks: 10
+            },
+            modifiers: [
+                {
+                    classification: 'per-click',
+                    type: "per-click-addition-from-pcps",
+                    percentage: 0.01
+                }
+            ]
+        }
     ];
 }

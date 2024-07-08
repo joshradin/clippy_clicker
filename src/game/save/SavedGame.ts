@@ -1,13 +1,15 @@
-import Game from "../Game.ts";
+import Game, {ascensionStats, AscensionStats} from "../Game.ts";
 
 export default interface SavedGame {
     timestamp: number,
     ownedBuildings: Record<string, number>,
     ownedUpgrades: number[],
     current: number,
-    currentAscension: number,
-    prevAscensions: number[]
+    currentAscension: number | AscensionStats,
+    prevAscensions: (number | AscensionStats)[],
 }
+
+
 
 /**
  * Converts a game to a saved game
@@ -36,11 +38,27 @@ export function toGame(savedGame: SavedGame): Game {
         });
     savedGame.ownedUpgrades.forEach(upgradeId => {
         game.activeUpgrades.add(upgradeId);
+        const upgrade = game.Upgrades[upgradeId];
+        game.applyUpgrade(upgrade);
     });
 
     game.paperclips.current = savedGame.current;
-    game.paperclips.thisAscension = savedGame.currentAscension;
-    game.paperclips.prevAscensions = savedGame.prevAscensions;
+    if (typeof savedGame.currentAscension === "number") {
+        game.paperclips.thisAscension.built = savedGame.currentAscension;
+    } else {
+        game.paperclips.thisAscension = savedGame.currentAscension;
+    }
+    for (const prevAscension of savedGame.prevAscensions) {
+        let stats = ascensionStats();
+
+        if (typeof prevAscension === "number") {
+            stats.built = prevAscension;
+        } else {
+            stats = prevAscension;
+        }
+
+        game.paperclips.prevAscensions.push(stats);
+    }
 
     game.updateData();
     return game;

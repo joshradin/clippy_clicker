@@ -9,7 +9,7 @@ test('total-paperclips', () => {
         type: "total-paperclips",
         quantity: 1
     })).toBeFalsy();
-    game.addPaperclips(1);
+    game.addPaperclips(1, "click");
     expect(game.criteriaEvaluator.eval({
         type: "total-paperclips",
         quantity: 1
@@ -33,7 +33,7 @@ test('total-paperclips and specific-buildings-owned', () => {
         ]
     };
     expect(game.criteriaEvaluator.eval(criteria)).toBeFalsy();
-    game.addPaperclips(1);
+    game.addPaperclips(1, "click");
     expect(game.criteriaEvaluator.eval(criteria)).toBeFalsy();
     game.buildingsOwned["bender"] += 1;
     expect(game.criteriaEvaluator.eval(criteria)).toBeTruthy();

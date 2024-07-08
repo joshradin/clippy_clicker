@@ -1,4 +1,5 @@
 import Building from "./Building.ts";
+
 import benderStoreIcon from "/buildings/bender/benderStore.png";
 import benderUpgradeIcon from "/buildings/bender/benderSmall.png";
 

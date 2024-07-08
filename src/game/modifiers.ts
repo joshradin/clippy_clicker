@@ -70,7 +70,10 @@ export function modifierToDescription(modifier: Modifier): string[] {
             return [
                 `Reduces build time by ${modifier.reduction * 100}% for each${modifier.buildingId ? buildingTitle(modifier.buildingId) : " building"}`
             ];
-
+        case "per-click-addition-from-pcps":
+            return [
+                `Each click provides ${modifier.percentage * 100}% of your total Pcps`
+            ];
     }
 }
 

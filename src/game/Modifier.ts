@@ -48,6 +48,15 @@ export interface PerClickAdditionFromBuildingQuantity extends BaseModifier {
     quantity: number
 }
 
+export interface PerClickAdditionFromPcps extends BaseModifier {
+    classification: "per-click";
+    type: "per-click-addition-from-pcps",
+    /**
+     * Provides per-click pcps
+     */
+    percentage: number
+}
+
 export interface BuildTimeReduction extends BaseModifier {
     classification: "build-time";
     type: "build-time-reduction";
@@ -68,6 +77,7 @@ type Modifier =
     | BuildingPcpsMultiplierFromBuildingQuantity
     | PerClickAddition
     | PerClickAdditionFromBuildingQuantity
+    | PerClickAdditionFromPcps
     | BuildTimeReduction
     | BuildTimeReductionPerBuilding
     ;

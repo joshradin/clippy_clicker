@@ -21,7 +21,7 @@ export class CriteriaEvaluator {
             case "specific-buildings-owned":
                 return this.game.getBuildingCount(criteria.buildingId) >= criteria.quantity;
             case "total-paperclips":
-                return this.game.paperclips.thisAscension >= criteria.quantity;
+                return this.game.paperclips.thisAscension.total >= criteria.quantity;
             case "bool": {
                 if (criteria.must) {
                     for (const must of criteria.must) {
@@ -50,6 +50,9 @@ export class CriteriaEvaluator {
                 }
 
                 return true;
+            }
+            case "total-clicks": {
+                return this.game.paperclips.thisAscension.clicks >= criteria.clicks;
             }
             default:
                 throw new Error("Invalid criteria type: " + criteria.type);

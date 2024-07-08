@@ -16,6 +16,7 @@ export default interface Upgrade {
     readonly cost: number;
     readonly criteria: UnlockCriteria;
     readonly modifiers: ReadonlyArray<Modifier>;
+    readonly associatedBuilding?: string;
 }
 
 /**

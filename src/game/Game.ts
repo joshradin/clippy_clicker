@@ -5,17 +5,37 @@ import {baseModifiers} from "./modifiers.ts";
 import {CriteriaEvaluator} from "./CriteriaEvaluator.ts";
 import Upgrade, {loadUpgrades} from "./Upgrade.ts";
 
-function getPaperclips(): Paperclips {
+export function ascensionStats(): AscensionStats {
+    return {
+        built: 0,
+        clicks: 0,
+        fromClicks: 0,
+        get total() {
+            return this.fromClicks + this.built;
+        }
+    };
+}
+
+function sumAscensionStats(...stats: AscensionStats[]): AscensionStats {
+    return stats.reduce((accum, next) => {
+        accum.built += next.built;
+        accum.clicks += next.clicks;
+        accum.fromClicks += next.fromClicks;
+        return accum;
+    }, ascensionStats());
+}
+
+function emptyPaperclips(): Paperclips {
     return {
         current: 0,
         bonus: 0,
         multiplier: 1,
         perSecond: 0,
         perClick: 1,
-        thisAscension: 0,
+        thisAscension: ascensionStats(),
         prevAscensions: [],
-        get allTime(): number {
-            return this.thisAscension + this.prevAscensions.reduce((acc, current) => acc + current, 0);
+        get allTime(): AscensionStats {
+            return sumAscensionStats(this.thisAscension, ...this.prevAscensions);
         }
     };
 }
@@ -25,7 +45,6 @@ function getPaperclips(): Paperclips {
  */
 export default class Game {
     readonly paperclips: Paperclips;
-    clicks: number;
 
     /**
      * The time to build manually
@@ -49,8 +68,7 @@ export default class Game {
 
 
     constructor() {
-        this.paperclips = getPaperclips();
-        this.clicks = 0;
+        this.paperclips = emptyPaperclips();
         this.buildTime = 1000;
         this.Buildings = loadBuildings();
         this.Upgrades = loadUpgrades(this);
@@ -82,7 +100,7 @@ export default class Game {
         const pcS = this.paperclips.perSecond;
         const clipsMade = pcS * seconds;
 
-        this.addPaperclips(clipsMade);
+        this.addPaperclips(clipsMade, "building");
 
         this._lastUpdated = time;
     }
@@ -121,6 +139,10 @@ export default class Game {
                 }
                 case "per-click-addition-from-building": {
                     sum += modifier.quantity * this.getBuildingCount(modifier.buildingId);
+                    break;
+                }
+                case "per-click-addition-from-pcps": {
+                    sum += modifier.percentage * this.paperclips.perSecond;
                     break;
                 }
                 default:
@@ -214,21 +236,25 @@ export default class Game {
      * @returns the amount of time required to 'complete' making this paperclip, in milliseconds
      */
     clickPaperclip(): number {
-        this.clicks += 1;
         const buildTime = this.buildTime;
         const perClick = this.paperclips.perClick;
+        this.paperclips.thisAscension.clicks += 1;
 
         const interval = setInterval(() => {
-            this.addPaperclips(perClick);
+            this.addPaperclips(perClick, "click");
             clearInterval(interval);
         }, buildTime);
 
         return buildTime;
     }
 
-    addPaperclips(paperclips: number): void {
+    addPaperclips(paperclips: number, source: "building" | "click"): void {
         this.paperclips.current += paperclips;
-        this.paperclips.thisAscension += paperclips;
+        if (source === "building") {
+            this.paperclips.thisAscension.built += paperclips;
+        } else if (source === "click") {
+            this.paperclips.thisAscension.fromClicks += paperclips;
+        }
     }
 
     /**
@@ -301,9 +327,7 @@ export default class Game {
                             this.activeUpgrades.add(upgradeId);
 
                             const upgrade = this.Upgrades[upgradeId];
-                            for (const modifier of upgrade.modifiers) {
-                                this.modifiers.addModifier(modifier);
-                            }
+                            this.applyUpgrade(upgrade);
 
                             return true;
                         } else {
@@ -319,7 +343,18 @@ export default class Game {
         return ret;
     }
 
+    applyUpgrade(upgrade: Upgrade) {
+        for (const modifier of upgrade.modifiers) {
+            this.modifiers.addModifier(modifier);
+        }
+    }
+}
 
+export interface AscensionStats {
+    total: number;
+    built: number;
+    clicks: number;
+    fromClicks: number;
 }
 
 /**
@@ -337,15 +372,17 @@ export interface Paperclips {
     /**
      * The total number of paperclips made over all runs
      */
-    allTime: number;
+    allTime: AscensionStats;
+
     /**
      * The number of paperclips created in this ascension
      */
-    thisAscension: number;
+    thisAscension: AscensionStats;
+
     /**
      * The number of paperclips created in previous ascensions
      */
-    prevAscensions: number[];
+    prevAscensions: AscensionStats[];
 }
 
 

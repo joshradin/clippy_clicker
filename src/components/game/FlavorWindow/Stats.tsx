@@ -20,7 +20,7 @@ export default function Stats() {
                 </header>
                 <p>
                     <span className={"font-bold"}>Total Paperclips: </span>
-                    <span><HumanReadableQuantity quantity={Math.floor(game.paperclips.thisAscension)}/></span>
+                    <span><HumanReadableQuantity quantity={Math.floor(game.paperclips.thisAscension.total)}/></span>
                 </p>
                 <p>
                     <span className={"font-bold"}>Per Click: </span>

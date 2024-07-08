@@ -27,6 +27,11 @@ export interface TotalPaperclips extends IUnlockCriteria {
     quantity: number;
 }
 
+export interface TotalClicks extends IUnlockCriteria {
+    type: "total-clicks",
+    clicks: number
+}
+
 export interface UnlockCriteriaBool extends IUnlockCriteria {
     type: "bool";
     must?: UnlockCriteria[];
@@ -39,6 +44,7 @@ type UnlockCriteria =
     | UpgradePurchased
     | TotalPaperclips
     | UnlockCriteriaBool
+    | TotalClicks
     ;
 
 
