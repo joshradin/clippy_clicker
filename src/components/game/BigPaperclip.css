@@ -20,5 +20,6 @@
     animation: paperclip-pulsate infinite 2s linear;
     width: 300px;
     aspect-ratio: 1/1;
+    background: transparent;
 }
 

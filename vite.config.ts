@@ -10,5 +10,8 @@ export default defineConfig({
     alias: {
       "@assets": path.resolve(__dirname, "public"),
     }
-  }
+  },
+  define: {
+    APP_VERSION: JSON.stringify(process.env.npm_package_version),
+  },
 });

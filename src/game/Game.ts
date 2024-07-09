@@ -4,6 +4,7 @@ import ModifierContainer from "./ModifierContainer.ts";
 import {baseModifiers} from "./modifiers.ts";
 import {CriteriaEvaluator} from "./CriteriaEvaluator.ts";
 import Upgrade, {loadUpgrades} from "./Upgrade.ts";
+import SavedGame, {toSavedGame} from "./save/SavedGame.ts";
 
 export function ascensionStats(): AscensionStats {
     return {
@@ -345,8 +346,12 @@ export default class Game {
 
     applyUpgrade(upgrade: Upgrade) {
         for (const modifier of upgrade.modifiers) {
-            this.modifiers.addModifier(modifier);
+            this.modifiers.addModifier(modifier, { ownerType: "upgrade", id: upgrade.id });
         }
+    }
+
+    export(): SavedGame {
+        return toSavedGame(this);
     }
 }
 

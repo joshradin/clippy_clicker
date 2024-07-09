@@ -67,7 +67,7 @@ export default function BuildingButton(
             .filter(upgrade => !game.activeUpgrades.has(upgrade.id))
             .filter(upgrade => upgrade.associatedBuilding === buildingId)
             .sort((a, b) => (a.cost - b.cost))[0] || null;
-    }, [game, buildingId, JSON.stringify(game.activeUpgrades)]);
+    }, [game, buildingId, JSON.stringify(game.activeUpgrades), update]);
 
     const onClick = () => {
         switch (mode) {
@@ -119,7 +119,7 @@ export default function BuildingButton(
                     </div>
                 </div>
             </div>
-            <div id={`${buildingId}-building-upgrades`} className={"h-24 w-24 grid bg-black border-4 m-1"}>
+            <div id={`${buildingId}-building-upgrades`} className={"h-24 w-24 grid bg-black border-4 m-1 container place-items-center"}>
                 {nextUpgrade && <PurchaseUpgrade upgrade={nextUpgrade}/>}
             </div>
         </div>

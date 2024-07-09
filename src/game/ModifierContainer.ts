@@ -1,9 +1,23 @@
 import Modifier, {BuildingModifier, ModifierClassification} from "./Modifier.ts";
+import Badge from "./Badge.ts";
+import Upgrade from "./Upgrade.ts";
+import _ from "lodash";
+
+export type ModifierOwner =
+    | { ownerType: "badge", id: Badge["id"] }
+    | { ownerType: "upgrade", id: Upgrade["id"] };
 
 interface ClassifiedModifierContainer<C extends ModifierClassification, M extends Modifier>
     extends Iterable<ContainerModifier<C, M>> {
-    readonly modifiers: Readonly<ContainerModifier<C, M>[]>;
-    addModifier(modifier: ContainerModifier<C, M>): void;
+    readonly modifiers: ContainerModifier<C, M>[];
+
+    addModifier(modifier: ContainerModifier<C, M>, owner?: ModifierOwner): void;
+
+    /**
+     * Remove modifiers owned by something
+     * @param owner the owner
+     */
+    removeModifiers(owner: ModifierOwner): boolean;
 }
 
 interface BuildingModifierContainer<C extends ModifierClassification, M extends Modifier & BuildingModifier>
@@ -31,18 +45,18 @@ export default class ModifierContainer implements Iterable<Modifier> {
         }
     }
 
-    addModifier<M extends Modifier>(modifier: M) {
+    addModifier<M extends Modifier>(modifier: M, owner?: ModifierOwner) {
         switch (modifier.classification) {
             case "per-click": {
-                this.perClickModifiers.addModifier(modifier);
+                this.perClickModifiers.addModifier(modifier, owner);
             }
                 break;
             case "building-pcps": {
-                this.pcpsPerBuildingModifiers.addModifier(modifier);
+                this.pcpsPerBuildingModifiers.addModifier(modifier, owner);
             }
                 break;
             case "build-time": {
-                this.buildTimeModifiers.addModifier(modifier);
+                this.buildTimeModifiers.addModifier(modifier, owner);
             }
                 break;
         }
@@ -62,16 +76,34 @@ export default class ModifierContainer implements Iterable<Modifier> {
 }
 
 class ClassifiedModifierContainerImpl<C extends ModifierClassification> implements ClassifiedModifierContainer<C, Modifier> {
-    readonly modifiers: ContainerModifier<C, Modifier>[];
+    private readonly unownedModifiers: ContainerModifier<C, Modifier>[];
+    private readonly ownedModifiers: Map<ModifierOwner, ContainerModifier<C, Modifier>[]>;
 
     constructor() {
-        this.modifiers = [];
+        this.unownedModifiers = [];
+        this.ownedModifiers = new Map();
     }
 
-    addModifier(modifier: ContainerModifier<C, Modifier>): void {
-        this.modifiers.push(modifier);
+    addModifier(modifier: ContainerModifier<C, Modifier>, owner?: ModifierOwner): void {
+        if (!owner) {
+            this.unownedModifiers.push(modifier);
+        } else {
+            const next = this.ownedModifiers.get(owner) || [];
+            next.push(modifier);
+            this.ownedModifiers.set(owner, next);
+        }
     }
 
+    removeModifiers(owner: ModifierOwner): boolean {
+        return this.ownedModifiers.delete(owner);
+    }
+
+
+    get modifiers(): ContainerModifier<C, Modifier>[] {
+        const emit: ContainerModifier<C, Modifier>[] = [...this.unownedModifiers];
+        emit.push(..._.flatten([...this.ownedModifiers.values()]));
+        return emit;
+    }
 
 
     [Symbol.iterator](): Iterator<ContainerModifier<C, Modifier>> {
@@ -80,26 +112,49 @@ class ClassifiedModifierContainerImpl<C extends ModifierClassification> implemen
 }
 
 class BuildingModifierContainerImpl<C extends ModifierClassification> implements BuildingModifierContainer<C, Modifier & BuildingModifier> {
-    private readonly _modifiers: Map<string, ContainerModifier<C, BuildingModifier & Modifier>[]>;
+    private readonly unownedModifiers: Map<string, ContainerModifier<C, BuildingModifier & Modifier>[]>;
+    private readonly ownedModifiers: Map<ModifierOwner, Map<string, ContainerModifier<C, BuildingModifier & Modifier>[]>>;
 
     constructor() {
-        this._modifiers = new Map();
+        this.unownedModifiers = new Map();
+        this.ownedModifiers = new Map();
     }
 
-    addModifier(modifier: ContainerModifier<C, Modifier & BuildingModifier>): void {
-        const buildingId = modifier.buildingId;
-        if (!this._modifiers.has(buildingId)) {
-            this._modifiers.set(buildingId, []);
+    private getMap(owner: ModifierOwner | undefined): Map<string, ContainerModifier<C, BuildingModifier & Modifier>[]> {
+        if (owner) {
+            if (!this.ownedModifiers.has(owner)) {
+                const map: Map<string, ContainerModifier<C, BuildingModifier & Modifier>[]> = new Map();
+                this.ownedModifiers.set(owner, map);
+                return map;
+            } else {
+                return this.ownedModifiers.get(owner)!;
+            }
+        } else {
+            return this.unownedModifiers;
         }
-        this._modifiers.get(buildingId)!.push(modifier);
+    }
+
+    addModifier(modifier: ContainerModifier<C, Modifier & BuildingModifier>, owner?: ModifierOwner): void {
+        const buildingId = modifier.buildingId;
+        const map = this.getMap(owner);
+
+        const modifiers = map.get(buildingId) || [];
+        modifiers.push(modifier);
+        map.set(buildingId, modifiers);
+    }
+
+    removeModifiers(owner: ModifierOwner): boolean {
+        return this.ownedModifiers.delete(owner);
     }
 
     getBuildingModifiers(buildingId: string): ContainerModifier<C, BuildingModifier & Modifier>[] {
-        return this._modifiers.get(buildingId) || [];
+        return this.modifiers.filter(modifier => modifier.buildingId === buildingId);
     }
 
     get modifiers(): (ContainerModifier<C, BuildingModifier & Modifier>)[] {
-        return [...this._modifiers.values()].flatMap((v) => v);
+        const emit: ContainerModifier<C, BuildingModifier & Modifier>[] = _.flatten([...this.unownedModifiers.values()]);
+        emit.push(..._.flatMap([...this.ownedModifiers.values()], (v) => _.flatten([...v.values()])));
+        return emit;
     }
 
     [Symbol.iterator](): Iterator<ContainerModifier<C, BuildingModifier & Modifier>> {

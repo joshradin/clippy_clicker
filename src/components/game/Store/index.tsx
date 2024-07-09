@@ -119,6 +119,7 @@ export default function Store() {
                 <div className={"container flex flex-row flex-wrap gap-1"}>
                     {
                         sortUpgrades(Object.values(game.Upgrades))
+                            .filter(upgrade => !upgrade.associatedBuilding)
                             .filter(upgrade => !game.activeUpgrades.has(upgrade.id))
                             .filter(upgrade => game.criteriaEvaluator.eval(upgrade.criteria))
                             .map(upgrade => {
