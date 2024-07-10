@@ -1,7 +1,7 @@
 import Upgrade from "./Upgrade.ts";
-import {UpgradeIconEffect} from "../components/common/UpgradeIcon.tsx";
 import Game from "./Game.ts";
 import Building from "./Building.ts";
+import {IconEffect} from "../components/common/IconEffect.ts";
 
 
 interface ScalingBuildingUpgradeProps {
@@ -11,7 +11,7 @@ interface ScalingBuildingUpgradeProps {
     buildingsReq: number
 }
 
-const effectScale: (UpgradeIconEffect | undefined)[] = [
+const effectScale: (IconEffect | undefined)[] = [
     undefined,
     "gold"
 ];

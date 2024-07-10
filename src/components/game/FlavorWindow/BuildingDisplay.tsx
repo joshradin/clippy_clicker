@@ -18,7 +18,7 @@ export default function BuildingDisplay() {
     }, [JSON.stringify(game.buildingsOwned)]);
 
     return (
-        <div className={"container relative grow "}>
+        <div className={"container relative grow dark:bg-black bg-white"}>
             {
                 buildings
                     .map((buildingBody, idx) => {

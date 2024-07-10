@@ -1,8 +1,8 @@
 import Modifier from "./Modifier.ts";
 import UnlockCriteria from "./UnlockCriteria.ts";
 import findUpgrades, {verifyUpgrades} from "./upgrades.ts";
-import {UpgradeIconEffect} from "../components/common/UpgradeIcon.tsx";
 import Game from "./Game.ts";
+import {IconEffect} from "../components/common/IconEffect.ts";
 
 /**
  * An upgrade
@@ -12,7 +12,7 @@ export default interface Upgrade {
     readonly name: string;
     readonly description: string;
     readonly icon?: string;
-    readonly effect?: UpgradeIconEffect;
+    readonly effect?: IconEffect;
     readonly cost: number;
     readonly criteria: UnlockCriteria;
     readonly modifiers: ReadonlyArray<Modifier>;

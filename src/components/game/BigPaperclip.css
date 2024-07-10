@@ -1,4 +1,4 @@
-@keyframes paperclip-pulsate {
+@keyframes pulsate-spin {
     0% {
         transform: scale(1) rotate(-3deg);
     }

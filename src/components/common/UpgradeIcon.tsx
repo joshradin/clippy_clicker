@@ -1,14 +1,13 @@
 import React from "react";
 import classnames from "classnames";
-
-export type UpgradeIconEffect =
-    | "gold";
+import getEffectFilter from "../../common/getEffectFilter.ts";
+import IconEffect from "./IconEffect.ts";
 
 
 export interface UpgradeIconProps {
     size: "small" | "medium" | "large";
     icon: string;
-    effect?: UpgradeIconEffect;
+    effect?: IconEffect;
 }
 
 export default function UpgradeIcon(props: UpgradeIconProps) {
@@ -31,12 +30,7 @@ export default function UpgradeIcon(props: UpgradeIconProps) {
     }, [size]);
 
     const filter: string = React.useMemo(() => {
-        switch (effect) {
-            case "gold":
-                return "invert(76%) sepia(98%) saturate(1753%) hue-rotate(359deg) brightness(102%) contrast(104%)";
-            default:
-                return "none";
-        }
+        return getEffectFilter(effect);
     }, [effect]);
 
 

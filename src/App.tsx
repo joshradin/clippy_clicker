@@ -28,7 +28,7 @@ function App() {
                 saveGame(game);
                 setLastSaved(Date.now());
             }
-        }, 1000);
+        }, 15_000);
 
         return () => {
             clearInterval(handle);
@@ -37,7 +37,7 @@ function App() {
 
     React.useEffect(() => {
         if (lastSaved) {
-            console.log("Game saved!");
+            console.debug("Game saved!");
         }
     }, [lastSaved]);
 
